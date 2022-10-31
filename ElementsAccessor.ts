@@ -1,9 +1,18 @@
+import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { ComponentFixture } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
+import { DebugElement, Component } from '@angular/core';
+
+export function getDebugElement(fixture: ComponentFixture<any>, selector: string): DebugElement{
+    return fixture.debugElement.query(By.css(selector));
+}
+
+export function submitForm(fixture: ComponentFixture<any>, selector: string): void{
+    getDebugElement(fixture, selector).triggerEventHandler('ngSubmit', null);
+}
 
 export function getElement(fixture: ComponentFixture<any>, selector: string): any {
-    return fixture.debugElement.query(By.css(selector)).nativeElement;
+    return fixture.debugElement.query(By.css(selector))?.nativeElement;
 }
 
 export function getAllElements(fixture: ComponentFixture<any>, selector: string): DebugElement[] {
@@ -43,14 +52,34 @@ export function getAttributeContent(fixture: ComponentFixture<any>, selector: st
 
 }
 
+export function getStyleElement(fixture: ComponentFixture<any>, selector: string){
+    let allStyles: any = {};
+    let attributeStyle = getAttributeContent(fixture, selector, 'style');
+    for(let i = 0; i < attributeStyle.split('; ').length; i++){
+        allStyles[attributeStyle.split('; ')[i].split(':')[0]] =  attributeStyle.split('; ')[i].split(':')[1].split(';')[0].trim('');
+    }
+ 
+    return allStyles;
+}
+
 export function changeInputValue(fixture: ComponentFixture<any>, selector: string, value: any): void {
     let element = getElement(fixture, selector);
     element.value = value;
     element.dispatchEvent(new Event('input'));
-    // fixture.detectChanges();
+    fixture.detectChanges();
 }
 
 export function getValueInput(fixture: ComponentFixture<any>, selector: string){
     return getElement(fixture, selector)?.value;
 }
  
+export function changeFormValue(fixture: ComponentFixture<any>, formName: FormGroup, values: {}): void{
+    let valueKeys = Object.keys(values);
+    let formKeys = Object.keys(formName.value);
+    for(let i = 0; i < formKeys.length; i++){
+        if(formName.value.hasOwnProperty(valueKeys[i])){
+            formName.controls[valueKeys[i]].setValue(values[valueKeys[i]]);
+        }
+    }
+    fixture.detectChanges();
+}
