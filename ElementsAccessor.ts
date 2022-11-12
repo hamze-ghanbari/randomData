@@ -11,6 +11,10 @@ export function submitForm(fixture: ComponentFixture<any>, selector: string): vo
     getDebugElement(fixture, selector).triggerEventHandler('ngSubmit', null);
 }
 
+export function eventElement(fixture: ComponentFixture<any>, selector: string, event : string, parameters : any = null): void{
+    getDebugElement(fixture, selector).triggerEventHandler(event, parameters);
+}
+
 export function getElement(fixture: ComponentFixture<any>, selector: string): any {
     return fixture.debugElement.query(By.css(selector))?.nativeElement;
 }
@@ -27,6 +31,10 @@ export function getAllClasses(fixture: ComponentFixture<any>, selector: string):
     let allClass = fixture.debugElement.query(By.css(selector)).classes;
     let classList = Object.keys(allClass);
     return classList.join(' ');
+}
+
+export function classElement(element : DebugElement, className: string): boolean{
+    return !!element.classes[className];
 }
 
 export function getTagName(fixture: ComponentFixture<any>, selector: string): string {
@@ -83,3 +91,4 @@ export function changeFormValue(fixture: ComponentFixture<any>, formName: FormGr
     }
     fixture.detectChanges();
 }
+

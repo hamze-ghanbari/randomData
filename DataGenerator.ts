@@ -85,10 +85,9 @@ export function generateData(object) {
 export function findProperty(object, properties = {}) {
     let keys = Object.keys(properties);
     let values = Object.values(properties);
-
     for (let i = 0; i < Object.keys(object).length; i++) {
         if (object.hasOwnProperty(keys[i]))
-            object[keys[i]] = values[i];
+        object[keys[i]] = values[i];
     }
     return object;
 }
@@ -153,7 +152,8 @@ export function mockTServiceResult(object, properties = {}) {
         finalResult = findProperty(finalResult, properties);
         model = findProperty(model, properties);
     }
-
-    Object.assign(finalResult.result, model);
+    if(!properties.hasOwnProperty('result')){
+        Object.assign(finalResult.result, model);
+    }
     return finalResult;
 }
