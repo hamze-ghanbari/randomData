@@ -41,17 +41,17 @@ export function randomArray(array) {
 }
 
 function randomprimitiveData(type) {
-    if (type == 'string' || type == 'Strnig')
+    if (type == 'string' || type == 'Strnig' || typeof type == 'string')
         return randomString();
-    if (type == 'number' || type == 'Number')
+    if (type == 'number' || type == 'Number' || typeof type == 'number')
         return randomNumber();
-    if (type == 'boolean' || type == 'Boolean')
+    if (type == 'boolean' || type == 'Boolean' || typeof type == 'boolean')
         return randomBoolean();
-    if (type == 'date' || type == 'Date')
+    if (type == 'date' || type == 'Date' || type instanceof Date)
         return randomDate();
     if (Array.isArray(type))
         return randomArray(type);
-    if (typeof type === 'object' && type !== null && !Array.isArray(type))
+    if (typeof type === 'object' && type !== null && !Array.isArray(type) && type instanceof Date == false)
         return generateData(type);
     if (type == null || type == 'Null')
         return null;
@@ -70,11 +70,11 @@ function generateData(object) {
             result[keys[i]] = randomNumber();
         if (type == 'boolean' || type == 'Boolean' || typeof type == 'boolean')
             result[keys[i]] = randomBoolean();
-        if (type == 'date' || type == 'Date')
+        if (type == 'date' || type == 'Date' || type instanceof Date)
             result[keys[i]] = randomDate();
         if (Array.isArray(type))
             result[keys[i]] = randomArray(type);
-        if (typeof type === 'object' && type !== null && !Array.isArray(type))
+        if (typeof type === 'object' && type !== null && !Array.isArray(type) && type instanceof Date == false)
             result[keys[i]] = generateData(type);
         if (type == null || type == 'Null')
             result[keys[i]] = null;
@@ -94,18 +94,18 @@ function findProperty(object, properties = {}) {
 }
 
 export function mockResult(object, count = 1, properties = {}) {
-    let obj = createObj(object);
+    // let obj = createObj(object);
     let result: any = [];
     if (count > 1) {
         for (let i = 0; i < count; i++) {
-            result.push(generateData(obj));
+            result.push(generateData(object));
             if (Object.keys(properties).length > 0) {
                 result[i] = findProperty(result[i], properties);
                 result.splice(result.indexOf(result[i]), 1, result[i]);
             }
         }
     } else {
-        result = generateData(obj);
+        result = generateData(object);
         if (Object.keys(properties).length > 0)
             result = findProperty(result, properties);
     }
@@ -115,7 +115,7 @@ export function mockResult(object, count = 1, properties = {}) {
 }
 
 export function mockPageListResult(object, count = 1, properties = {}) {
-    let obj = createObj(object);
+    // let obj = createObj(object);
     let result: any = [];
     let finalResult: any;
     let tServiceModel = { result: {}, message: 'string', error: 'string', hasError: 'boolean', refrenceId: 'string', };
@@ -125,7 +125,7 @@ export function mockPageListResult(object, count = 1, properties = {}) {
     finalResult = generateData(tServiceModel);
     serviceResult = generateData(pageListModel);
     for (let i = 0; i < count; i++) {
-        result.push(generateData(obj));
+        result.push(generateData(object));
         if (Object.keys(properties).length > 0) {
             result[i] = findProperty(result[i], properties);
             result.splice(result.indexOf(result[i]), 1, result[i]);
@@ -143,37 +143,41 @@ export function mockPageListResult(object, count = 1, properties = {}) {
 }
 
 export function mockTServiceResult(object, properties = {}) {
-    let obj = createObj(object);
+    // let obj = createObj(object);
     let finalResult: any;
     let model: any;
     let tServiceModel = { result: {}, message: 'string', error: 'string', hasError: 'boolean', refrenceId: 'string' };
 
     finalResult = generateData(tServiceModel);
-    model = generateData(obj);
-
-    if (Object.keys(properties).length > 0) {
-        finalResult = findProperty(finalResult, properties);
-        model = findProperty(model, properties);
-    }
-    if (!properties.hasOwnProperty('result')) {
-        Object.assign(finalResult.result, model);
+    if(typeof object == 'string'){
+        finalResult.result = randomString();
+    }else{
+        model =  generateData(object);
+    
+        if (Object.keys(properties).length > 0) {
+            finalResult = findProperty(finalResult, properties);
+            model = findProperty(model, properties);
+        }
+        if (!properties.hasOwnProperty('result')) {
+            Object.assign(finalResult.result, model);
+        }
     }
     return finalResult;
 }
 
  
-export function createObj(model) {
-    let object = {};
-    for (let i = 0; i < Object.values(model).length; i++) {
-        object[Object.keys(model)[i]] =  model[Object.keys(model)[i]];
+// export function createObj(model) {
+//     let object = {};
+//     for (let i = 0; i < Object.values(model).length; i++) {
+//         object[Object.keys(model)[i]] =  model[Object.keys(model)[i]];
 
-        if (Array.isArray(model[Object.keys(model)[i]])) {
-            object[Object.keys(model)[i]] = model[Object.keys(model)[i]];
-        }
-        if (typeof model[Object.keys(model)[i]] === 'object' &&  model[Object.keys(model)[i]] !== null && !Array.isArray(model[Object.keys(model)[i]])) {
-            object[Object.keys(model)[i]] = model[Object.keys(model)[i]];
-        }
-    }
-    return object;
-}
+//         if (Array.isArray(model[Object.keys(model)[i]])) {
+//             object[Object.keys(model)[i]] = model[Object.keys(model)[i]];
+//         }
+//         if (typeof model[Object.keys(model)[i]] === 'object' &&  model[Object.keys(model)[i]] !== null && !Array.isArray(model[Object.keys(model)[i]])) {
+//             object[Object.keys(model)[i]] = model[Object.keys(model)[i]];
+//         }
+//     }
+//     return object;
+// }
  
